@@ -1,5 +1,6 @@
 package com.example.enishopcompose.bo
 
+
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -20,7 +21,12 @@ data class Article(
     @ColumnInfo("date")
     var date: Date = Date(),
     @Json(name = "image")
-    var urlImage: String = ""
+    var urlImage: String = "",
+    var category : String = "",
+    @Json(name = "rate")
+    var rate : Float = 0f
 )
+
+
 
 

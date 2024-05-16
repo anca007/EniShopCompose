@@ -1,4 +1,4 @@
-package com.example.eni_shop.service
+package com.example.enishopcompose.dao.network
 
 import com.example.enishopcompose.bo.Article
 import com.example.enishopcompose.utils.DateConverter
@@ -11,7 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-interface ArticleService {
+interface ArticleServiceAPI {
 
     companion object {
         val BASE_URL = "https://fakestoreapi.com/"
@@ -41,8 +41,11 @@ interface ArticleService {
     @POST("products")
     suspend fun addArticle(@Body article: Article)
 
+    @GET("products/categories")
+    suspend fun getCategories() : List<String>
+
     object ArticleApi {
-        val retrofitService: ArticleService by lazy { retrofit.create(ArticleService::class.java) }
+        val retrofitService: ArticleServiceAPI by lazy { retrofit.create(ArticleServiceAPI::class.java) }
     }
 
 }

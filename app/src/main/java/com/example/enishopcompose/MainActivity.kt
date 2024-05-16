@@ -3,15 +3,12 @@ package com.example.enishopcompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +22,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.enishopcompose.ui.common.TitleApp
 import com.example.enishopcompose.ui.screen.ArticleDetailScreen
 import com.example.enishopcompose.ui.screen.ArticleFormScreen
 import com.example.enishopcompose.ui.screen.ArticleListScreen
@@ -46,8 +42,10 @@ class MainActivity : ComponentActivity() {
 fun EniShopApp(modifier: Modifier = Modifier) {
     EniShopComposeTheme {
         val navController = rememberNavController()
-        Scaffold(
-            bottomBar = { EniShopNavigationBar(navController = navController) },
+        EniShopNavHost(navController = navController)
+
+
+        //bottomBar = { EniShopNavigationBar(navController = navController) },
 //            floatingActionButton = {
 //                FloatingActionButton(
 //                    onClick = {},
@@ -62,13 +60,9 @@ fun EniShopApp(modifier: Modifier = Modifier) {
 //            },
 //            floatingActionButtonPosition = FabPosition.End
 
-            //topBar = { EniShopNavigationBar(navController = navController) }
-        ) {
-            Column(modifier = Modifier.padding(it)) {
-                TitleApp()
-                EniShopNavHost(navController = navController)
-            }
-        }
+        //topBar = { EniShopNavigationBar(navController = navController) }
+
+
     }
 }
 
@@ -130,12 +124,7 @@ fun EniShopNavHost(
             val fav = it.arguments?.getBoolean(EniShopHome.homeArg) ?: false
 
             ArticleListScreen(
-                onClickOnAddArticle = {
-                    navController.navigate(EniShopAdd.route) {
-                        launchSingleTop = true
-                        popUpTo(navController.graph.findStartDestination().id)
-                    }
-                },
+                navController = navController,
                 onClickOnArticleItem = {
                     navController.navigate("${EniShopDetail.route}/$it")
                 },
@@ -143,19 +132,22 @@ fun EniShopNavHost(
             )
         }
         this.composable(EniShopAdd.route) {
-            ArticleFormScreen(onClickOnSave = {
-                navController.navigate(EniShopHome.route) {
-                    launchSingleTop = true
-                    popUpTo(navController.graph.findStartDestination().id)
-                }
-            })
+            ArticleFormScreen(
+                onClickOnSave = {
+                    navController.navigate(EniShopHome.route) {
+                        launchSingleTop = true
+                        popUpTo(navController.graph.findStartDestination().id)
+                    }
+                },
+                navController = navController
+            )
         }
         this.composable(
             route = EniShopDetail.routeWithArgs,
             arguments = EniShopDetail.arguments
         ) {
             val articleId = it.arguments?.getInt(EniShopDetail.articleDetailArg) ?: 0
-            ArticleDetailScreen(articleId = articleId.toLong())
+            ArticleDetailScreen(articleId = articleId.toLong(), navController = navController)
         }
     }
 }
