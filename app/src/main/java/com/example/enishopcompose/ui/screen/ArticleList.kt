@@ -26,8 +26,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,16 +49,15 @@ import com.example.enishopcompose.vm.ArticleListViewModel
 
 private const val TAG = "ArticleList"
 
-
-
 @Composable
 fun ArticleListScreen(
     modifier: Modifier = Modifier,
-    navController : NavHostController,
+    navController: NavHostController,
     articleListViewModel: ArticleListViewModel = viewModel(
         factory = ArticleListViewModel.Factory
     ),
     isArticlesFav: Boolean = false,
+    backgroundColor: Color,
     onClickOnArticleItem: (Long) -> Unit
 ) {
 
@@ -72,9 +75,11 @@ fun ArticleListScreen(
     val articles by articleListViewModel.articles.collectAsState()
     val isLoading by articleListViewModel.isLoading.collectAsState()
     val categories by articleListViewModel.categories.collectAsState()
-    val selectedCategory by articleListViewModel.selectedCategory.collectAsState()
+    var selectedCategory by remember {
+        mutableStateOf("")
+    }
 
-    val filteredArticles = if (selectedCategory != null) {
+    val filteredArticles = if (selectedCategory != "") {
         articles.filter {
             it.category == selectedCategory
         }
@@ -85,7 +90,8 @@ fun ArticleListScreen(
     Scaffold(
         topBar = { TopBar(navController = navController) },
         floatingActionButton = { AddArticleFAB(navController = navController) },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.End,
+        containerColor = backgroundColor
     ) {
 
         if (!isLoading) {
@@ -101,7 +107,10 @@ fun ArticleListScreen(
                     CategoryFilterChip(
                         categories = categories,
                         selectedCategory = selectedCategory,
-                        articleListViewModel = articleListViewModel
+                        articleListViewModel = articleListViewModel,
+                        onCategoryClick = {
+                            selectedCategory = it
+                        }
                     )
                     ArticleList(
                         articleList = filteredArticles,
@@ -118,8 +127,9 @@ fun ArticleListScreen(
 fun CategoryFilterChip(
     modifier: Modifier = Modifier,
     categories: List<String>,
-    selectedCategory: String?,
-    articleListViewModel: ArticleListViewModel
+    selectedCategory: String,
+    articleListViewModel: ArticleListViewModel,
+    onCategoryClick: (String) -> Unit
 ) {
     LazyRow {
         items(categories) { category ->
@@ -127,7 +137,12 @@ fun CategoryFilterChip(
                 modifier = modifier.padding(4.dp),
                 selected = category == selectedCategory,
                 onClick = {
-                    articleListViewModel.setCategory(category)
+                    // articleListViewModel.setCategory(category)
+                    if (category == selectedCategory) {
+                        onCategoryClick("")
+                    } else {
+                        onCategoryClick(category)
+                    }
                 },
                 label = {
                     Text(text = category.replaceFirstChar { it.uppercase() })

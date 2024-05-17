@@ -10,7 +10,7 @@ import com.example.enishopcompose.bo.Article
 import com.example.enishopcompose.utils.DateConverter
 import com.example.enishopcompose.utils.DateRoomConverter
 
-@Database(entities = [Article::class], version = 3)
+@Database(entities = [Article::class], version = 4)
 @TypeConverters(DateRoomConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 

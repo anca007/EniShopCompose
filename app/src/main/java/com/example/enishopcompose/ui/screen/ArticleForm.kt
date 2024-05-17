@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,11 +48,13 @@ fun ArticleFormScreen(
     articleFormViewModel: ArticleFormViewModel = viewModel(
         factory = ArticleFormViewModel.Factory
     ),
+    backgroundColor : Color,
     onClickOnSave: () -> Unit
 ) {
     val contextForToast = LocalContext.current.applicationContext
     Scaffold(
-        topBar = { TopBar(navController = navController) }
+        topBar = { TopBar(navController = navController) },
+        containerColor = backgroundColor
     ) {
 
         Column(

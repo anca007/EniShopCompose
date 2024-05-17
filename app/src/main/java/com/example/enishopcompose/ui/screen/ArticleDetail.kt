@@ -2,6 +2,7 @@ package com.example.enishopcompose.ui.screen
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,7 +51,8 @@ fun ArticleDetailScreen(
     articleId: Long,
     articleDetailViewModel: ArticleDetailViewModel = viewModel(
         factory = ArticleDetailViewModel.Factory
-    )
+    ),
+    backgroundColor : Color,
 ) {
     LaunchedEffect(Unit) {
         articleDetailViewModel.initArticle(articleId)
@@ -62,7 +65,8 @@ fun ArticleDetailScreen(
     val context = LocalContext.current
 
     Scaffold(
-        topBar = { TopBar(navController) }
+        topBar = { TopBar(navController) },
+        containerColor = backgroundColor
     ) {
 
         if (!isLoading) {
@@ -102,7 +106,7 @@ fun ArticleDetailScreen(
         }
     }
 }
-
+private const val TAG = "ArticleDetail"
 @Composable
 fun ArticleDetail(
     article: Article,
@@ -111,6 +115,8 @@ fun ArticleDetail(
     onCheckedChange: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
+
+    Log.i(TAG, "ArticleDetail: " + article)
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -177,8 +183,7 @@ fun ArticleDetailPreview() {
             urlImage = "https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg",
             name = "Valise de fou",
             description = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut la",
-            price = 123.38f,
-            rate = 4.5f
+            price = 123.38f
         ),
         checkedFav = false
     ) {

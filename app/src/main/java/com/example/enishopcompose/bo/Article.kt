@@ -23,8 +23,6 @@ data class Article(
     @Json(name = "image")
     var urlImage: String = "",
     var category : String = "",
-    @Json(name = "rate")
-    var rate : Float = 0f
 )
 
 

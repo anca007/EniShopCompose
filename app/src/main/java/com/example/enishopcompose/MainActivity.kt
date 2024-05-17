@@ -10,11 +10,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -22,6 +26,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.enishopcompose.repository.ArticleRepository
+import com.example.enishopcompose.service.DataStoreManager
+import com.example.enishopcompose.service.dataStore
 import com.example.enishopcompose.ui.screen.ArticleDetailScreen
 import com.example.enishopcompose.ui.screen.ArticleFormScreen
 import com.example.enishopcompose.ui.screen.ArticleListScreen
@@ -32,6 +39,7 @@ private const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             EniShopApp()
         }
@@ -40,31 +48,14 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun EniShopApp(modifier: Modifier = Modifier) {
-    EniShopComposeTheme {
+
+    EniShopComposeTheme() {
+
         val navController = rememberNavController()
         EniShopNavHost(navController = navController)
-
-
-        //bottomBar = { EniShopNavigationBar(navController = navController) },
-//            floatingActionButton = {
-//                FloatingActionButton(
-//                    onClick = {},
-//                    shape = CircleShape,
-//                ) {
-//                    Image(
-//                        imageVector = Icons.Default.AccountCircle,
-//                        contentDescription = "Add article",
-//                        modifier = Modifier.size(50.dp)
-//                    )
-//                }
-//            },
-//            floatingActionButtonPosition = FabPosition.End
-
-        //topBar = { EniShopNavigationBar(navController = navController) }
-
-
     }
 }
+
 
 @Composable
 fun EniShopNavigationBar(navController: NavHostController) {
@@ -110,11 +101,24 @@ fun EniShopNavigationBar(navController: NavHostController) {
 
 @Composable
 fun EniShopNavHost(
-    navController: NavHostController
+    navController: NavHostController,
+    modifier: Modifier = Modifier
 ) {
+
+    var backgroundColor by remember { mutableStateOf(Color.White) }
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        DataStoreManager.getBackgroundColor(context).collect {
+            backgroundColor = Color(it)
+        }
+    }
+
+
     NavHost(
         navController = navController,
-        startDestination = EniShopHome.routeWithArgs
+        startDestination = EniShopHome.routeWithArgs,
+        modifier = modifier
     ) {
         this.composable(
             route = EniShopHome.routeWithArgs,
@@ -128,7 +132,8 @@ fun EniShopNavHost(
                 onClickOnArticleItem = {
                     navController.navigate("${EniShopDetail.route}/$it")
                 },
-                isArticlesFav = fav
+                isArticlesFav = fav,
+                backgroundColor = backgroundColor
             )
         }
         this.composable(EniShopAdd.route) {
@@ -139,7 +144,8 @@ fun EniShopNavHost(
                         popUpTo(navController.graph.findStartDestination().id)
                     }
                 },
-                navController = navController
+                navController = navController,
+                backgroundColor = backgroundColor
             )
         }
         this.composable(
@@ -147,7 +153,7 @@ fun EniShopNavHost(
             arguments = EniShopDetail.arguments
         ) {
             val articleId = it.arguments?.getInt(EniShopDetail.articleDetailArg) ?: 0
-            ArticleDetailScreen(articleId = articleId.toLong(), navController = navController)
+            ArticleDetailScreen(articleId = articleId.toLong(), navController = navController,  backgroundColor = backgroundColor)
         }
     }
 }
